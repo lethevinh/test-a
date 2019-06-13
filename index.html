@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>single page app</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="data-spm" content="a1z1d1">
+    <meta name="aplus-no-track" content="1" />
+    <meta name="aplus-ajax" content="1554667">
+    <meta name="aplus-waiting" content="MAN">
+    <link rel="stylesheet" href="./bootstrap.css">
+    <style type="text/css">
+    .tab {
+        margin-top: 20px;
+    }
+
+    .tab .tab-title {
+        padding: 10px;
+        height: 200px;
+        background-color: #f0f1f2;
+    }
+
+    .tab .tab-title li {
+        margin: 12px 0;
+    }
+
+    .tab .tab-title li:first-child {
+        margin-top: 0;
+    }
+
+    .tab .page_detail {
+        padding: 10px;
+        height: 200px;
+        background-color: #c0c1c2;
+        color: #2062e6;
+        font-family: sans-serif;
+        font-size: 16px;
+    }
+    </style>
+    <script type="text/javascript" src="./test.js"></script>
+    <script type="text/javascript">
+    var q = (window.goldlog_queue || (window.goldlog_queue = []));
+    q.push({
+        action: 'goldlog.aplus_pubsub.subscribe',
+        arguments: ['pvidChange', function(obj) {
+            document.getElementById('pvid_detail').innerText = 'pvid: ' + obj.pvid + ' pre_pvid: ' + obj.pre_pvid;
+        }]
+    });
+    // q.push({
+    //   action: 'goldlog.aplus_pubsub.subscribe',
+    //   arguments: ['goldlogReady', function (obj) {
+    //     console.log(obj);
+    //   }]
+    // });
+    var obj = {
+        '#/a': {
+            spmb: '9187143',
+            name: 'spa_pagea',
+            checksum: '46836988'
+        },
+        '#/b': {
+            spmb: '9187152',
+            name: 'spa_pageb',
+            checksum: '46836987'
+        },
+        '#/c': {
+            spmb: '9187229',
+            name: 'spa_pagec',
+            checksum: '46836994'
+        },
+    };
+
+    var getHash = function() {
+        var _h = location.hash ? location.hash.match(/#\/(a|b|c)/)[0] : '';
+        return _h;
+    };
+
+    function sendPV(spmInfor) {
+        var q1 = (window.goldlog_queue || (window.goldlog_queue = []));
+        q1.push({
+            action: 'goldlog.setPageSPM',
+            arguments: ['a1z1d1', spmInfor.spmb]
+        });
+        q1.push({
+            action: 'goldlog.sendPV',
+            arguments: [{
+                is_auto: false,
+                checksum: spmInfor.checksum // checksum需要申请
+            }]
+        });
+        document.getElementById('page_detail').innerText = 'spm: a1z1d1.' + spmInfor.spmb;
+        var btn_els = document.getElementsByTagName('button');
+        for (var i = 0; i < btn_els.length; i++) {
+            var _cls = btn_els[i].getAttribute('class');
+            if (_cls === spmInfor.name) {
+                btn_els[i].setAttribute('class', _cls + ' btn-primary');
+            } else if (/spa_page(a|b|c)\W{1}btn-primary/.test(_cls)) {
+                btn_els[i].setAttribute('class', _cls.replace(' btn-primary', ''));
+            }
+        }
+
+        //dplus单页应用发送pv事件
+        // dplus.track('spa_pv', {hash: getHash()});
+    }
+
+    var q = (window.goldlog_queue || (window.goldlog_queue = []));
+    q.push({
+        action: 'goldlog.on',
+        arguments: [window, 'hashchange', function(e) {
+            spmInfor = obj[getHash()];
+            sendPV(spmInfor)
+        }]
+    });
+
+    function hander(hash) {
+        location.hash = "#/" + hash;
+    };
+    </script>
+</head>
+
+<body data-spm="9187143">
+    <script>
+    with(document) with(body) with(insertBefore(createElement("script"), firstChild)) setAttribute("exparams", "category=&userid=&aplus&task_test=1&udpid=&&yunid=&&trid=0b88601515603367119967252eb115&asid=AQAAAABI2QBdbXltfwAAAABnvtPfLhiGJA==&sidx=0", id = "beacon-aplus", src = (location > "https" ? "//g" : "//g") + ".alicdn.com/alilog/mlog/aplus_v2.js?_t=20180125")
+    </script>
+    <div class="container-fluid">
+        <div class="row">
+            <a class="index" href="../index.html">返回测试首页</a>
+            <span>/</span>
+            <span>单页应用测试场景</span>
+        </div>
+        <div class="row">
+            <button class="btn btn-info" onclick="datacenter()">看数据</button>
+        </div>
+        <div class="row">
+            <a href="https://www.taobao.com" target="_blank">淘宝首页</a>
+        </div>
+        <div class="row tab">
+            <ul id="btn_collection" class="tab-title col-md-1" data-spm="testc1">
+                <li>
+                    <a class="spa_pagea" data-spm="d11" href="javascript:void()" onclick="hander('a')">pageA</a>
+                </li>
+                <li>
+                    <a class="spa_pageb" data-spm="d12" href="javascript:void()" onclick="hander('b')">pageB</a>
+                </li>
+                <li>
+                    <a class="spa_pagec" data-spm="d13" href="javascript:void()" onclick="hander('c')">pageC</a>
+                </li>
+            </ul>
+            <div class="col-md-11 page_detail">
+                <p id="page_detail">SPM:</p>
+                <p id="pvid_detail">PVID:</p>
+            </div>
+        </div>
+        <pre class="row">
+  景八、单页应用
+
+  设置<meta name="aplus-waiting" content="MAN"> 手动发pv 参考：http://groups.alidemo.cn/alilog/manual-for-f2e/aplus/spa.html
+
+    1、hashChange 发pv 验证spm流转
+
+    hashChange1、起始页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_a 9187143
+    hashChange2、中间页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_b 9187152
+    hashChange3、last页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_c 9187229
+    在明细层验证：page2、page3里面的spm-url和spm-pre 指标监控：验证11个浏览指标
+
+    2、historyChange 发pv 验证spm流转
+
+    page1、起始页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_a 9187143
+    page2、中间页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_b 9187152
+    page3、last页 http://aplus.ju.taobao.com/assets/testPages/aplus_v2/spa_c 9187229
+    在明细层验证：page2、page3里面的spm-url和spm-pre 指标监控：验证11个浏览指标
+  </pre>
+    </div>
+    <script>
+    if (location.port === '6001') {
+        with(document) with(body) with(insertBefore(createElement("script"), firstChild)) setAttribute("exparams", "category=&userid=qingliang_hu&aplus&yunid=&LdfaOcnoxCmjX5&asid=AQAAAAB0i3NWYexQGwAAAACA3YTplJdWNA==", id = "beacon-aplus",
+            src = "//g.alicdn.com/alilog/mlog/aplus_v2.js"
+        );
+    }
+    sendPV(obj[getHash() || "#/a"]);
+    </script>
+    <script type="text/javascript">
+    ! function(a, b) { if (!b.__SV) { var c, d, e, f;
+            window.dplus = b, b._i = [], b.init = function(a, c, d) {
+                function g(a, b) { var c = b.split(".");
+                    2 == c.length && (a = a[c[0]], b = c[1]), a[b] = function() { a.push([b].concat(Array.prototype.slice.call(arguments, 0))) } } var h = b; for ("undefined" != typeof d ? h = b[d] = [] : d = "dplus", h.people = h.people || [], h.toString = function(a) { var b = "dplus"; return "dplus" !== d && (b += "." + d), a || (b += " (stub)"), b }, h.people.toString = function() { return h.toString(1) + ".people (stub)" }, e = "disable track track_links track_forms register unregister get_property identify clear set_config get_config get_distinct_id track_pageview register_once track_with_tag time_event people.set people.unset people.delete_user".split(" "), f = 0; f < e.length; f++) g(h, e[f]);
+                b._i.push([a, c, d]) }, b.__SV = 1.1, c = a.createElement("script"), c.type = "text/javascript", c.charset = "utf-8", c.async = !0, c.src = "//w.cnzz.com/dplus.php?id=1254009617", d = a.getElementsByTagName("script")[0], d.parentNode.insertBefore(c, d) } }(document, window.dplus || []), dplus.init("1254009617");
+    </script>
+</body>
+
+</html>
